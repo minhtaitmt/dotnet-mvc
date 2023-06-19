@@ -10,6 +10,10 @@ namespace GenericRepositoryAndUnitofWork.Helpers
         { 
             CreateMap<Book, BookModel>().ReverseMap();
             CreateMap<Category, CategoryModel>().ReverseMap();
+            CreateMap<OrderDetail, OrderDetailInputModel>().ReverseMap();
+            CreateMap<OrderDetail, OrderDetailModel>().ReverseMap();
+            CreateMap<Order, OrderViewModel>().ReverseMap();
+            CreateMap<Order, OrderModel>().ReverseMap();
         }
     }
 }

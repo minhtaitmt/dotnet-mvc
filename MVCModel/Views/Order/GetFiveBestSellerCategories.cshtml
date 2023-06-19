@@ -1,0 +1,58 @@
+﻿@model IEnumerable<MVCModel.Models.BestCategoryModel>
+
+@{
+    ViewData["Title"] = "GetFiveBestSellerCategories";
+}
+
+<h1>Top 10 Best Seller Categories</h1>
+
+<form asp-action="GetFiveBestSellerCategories" method="get" class="form-inline my-3">
+    Search for other month <input type="number" name="month" /> <button>Search</button>
+</form>
+
+<p>
+    <a asp-action="Index">Back to list</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalSells)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalRevenue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Month)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalSells)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalRevenue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Month)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -18,6 +18,10 @@
 <p class="mt-3">
     <a asp-action="Create">Create New Book</a>
 </p>
+
+<form asp-action="CategoryByPrice" method="get" class="form-inline">
+    Tìm Category theo giá <input type="number" name="price"/> <button>Tìm</button>
+</form>
 <table class="table">
     <thead>
         <tr>

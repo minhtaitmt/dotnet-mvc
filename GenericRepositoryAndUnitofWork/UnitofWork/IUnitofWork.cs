@@ -6,6 +6,7 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
     {
         IBookRepository BookRepository { get; }
         ICategoryRepository CategoryRepository { get; }
+        IOrderRepository OrderRepository { get; }
         void SaveChanges();
     }
 }

@@ -56,7 +56,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return Ok(bookModel);
         }
 
-        //[HttpGet]
+        //[HttpGet("search")]
         //public async Task<IActionResult> GetBooksWithLinq(string? name, double? priceFrom, double? priceTo, string? sortBy, int pageIndex = 1)
         //{
         //    var booksModel = await _unitOfWork.BookRepository.GetBooksWithLinqAsync(name, priceFrom, priceTo, sortBy, pageIndex);

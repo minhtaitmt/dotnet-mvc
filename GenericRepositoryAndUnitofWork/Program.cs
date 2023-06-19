@@ -27,6 +27,7 @@ builder.Services.AddMvc();
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IUnitofWork, UnitofWork>();
 
 builder.Services.AddAutoMapper(typeof(Program));

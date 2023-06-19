@@ -8,12 +8,14 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
         private readonly BookStoreContext _context;
         private IBookRepository _bookRepository;
         private ICategoryRepository _categoryRepository;
+        private IOrderRepository _orderRepository;
 
-        public UnitofWork(BookStoreContext context, IBookRepository bookRepository, ICategoryRepository categoryRepository)
+        public UnitofWork(BookStoreContext context, IBookRepository bookRepository, ICategoryRepository categoryRepository, IOrderRepository orderRepository)
         {
             _context = context;
             _bookRepository = bookRepository;
             _categoryRepository = categoryRepository;
+            _orderRepository = orderRepository;
         }
 
         public IBookRepository BookRepository
@@ -33,6 +35,16 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
                 if(_categoryRepository == null )
                     _categoryRepository = new CategoryRepository(_context);
                 return _categoryRepository;
+            }
+        }
+
+        public IOrderRepository OrderRepository
+        {
+            get
+            {
+                if (_orderRepository == null)
+                    _orderRepository = new OrderRepository(_context);
+                return _orderRepository;
             }
         }
 

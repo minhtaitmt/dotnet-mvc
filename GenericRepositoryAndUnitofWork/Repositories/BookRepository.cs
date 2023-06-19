@@ -13,7 +13,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         public static int PAGE_SIZE { get; set; } = 4;
 
         public BookRepository(BookStoreContext context) 
-        { 
+        {
             _context = context;
         }
 

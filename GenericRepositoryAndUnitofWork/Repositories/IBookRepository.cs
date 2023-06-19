@@ -8,7 +8,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         List<Book> GetAllBooks ();
         //Task<Book> GetBookByIdAsync (int id);
         Book GetBookById(int id);
-        //Task <List<LinQBookModel>> GetBooksWithLinqAsync (string? name, double? priceFrom, double? priceTo, string? sortBy, int pageIndex = 1);
+        //Task<List<LinQBookModel>> GetBooksWithLinqAsync(string? name, double? priceFrom, double? priceTo, string? sortBy, int pageIndex = 1);
 
         // Get Categories in which Book Price > price
         List<CategoryPriceModel> GetCategoryByPrice(double price);
