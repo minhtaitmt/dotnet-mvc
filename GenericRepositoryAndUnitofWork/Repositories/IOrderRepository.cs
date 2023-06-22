@@ -13,10 +13,16 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         void DeleteOrder(int id);
 
         List<BestSellerModel> GetTenBestSellerBooks(int month);
+        Task<List<BestSellerModel>> GetTenBestSellerBooksAsync(int month);
         List<BestCategoryModel> GetBestSellerCategory(int month);
         TotalBookAndCategorySell GetTotalBookAndCategorySell(int month);
-        List<UnPopularBooks> GetUnpopularBooks(int month);
+        //List<UnPopularBooks> GetUnpopularBooks(int month);
+        Task<List<UnPopularBooks>> GetUnpopularBooks(int month);
         Book GetBestSellerBook(int month);
+
+        Task<List<PopularCategory>> GetPopularCategoriesAsync(int month);
+        Task<List<HighestRevenueBooks>> GetHighestRevenueBooksAsync(int month);
+        Task<List<MonthlyRevenue>> GetMonthlyRevenueAsync(int year);
     }
 }
 

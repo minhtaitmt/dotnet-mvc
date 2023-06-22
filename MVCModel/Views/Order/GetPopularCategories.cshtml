@@ -1,0 +1,52 @@
+﻿@model IEnumerable<MVCModel.Models.PopularCategory>
+
+@{
+    ViewData["Title"] = "GetPopularCategories";
+}
+
+<h1>Popular Categories</h1>
+
+<form asp-action="GetPopularCategories" method="get" class="form-inline my-3">
+    Search for other month <input type="number" name="month" /> <button>Search</button>
+</form>
+
+<p>
+    <a asp-action="Index">Back to list</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CategoryName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Month)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderInclude)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Month)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderInclude)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

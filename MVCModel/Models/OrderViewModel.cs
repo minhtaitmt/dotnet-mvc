@@ -80,6 +80,32 @@ namespace MVCModel.Models
         public string? Description { get; set; }
     }
 
+    public class PopularCategory
+    {
+        public int CategoryId { get; set; }
+        public string? CategoryName { get; set; }
+        public int OrderInclude { get; set; }
+        public int Month { get; set; }
 
+    }
+
+    public class HighestRevenueBooks
+    {
+        public int Id { get; set; }
+        public string? BookName { get; set; }
+        public int CategoryId { get; set; }
+        public double Revenue { get; set; }
+        public int Quantity { get; set; }
+        public double Price { get; set; }
+        public int Month { get; set; }
+    }
+
+    public class MonthlyRevenue
+    {
+        public int Month { get; set; }
+        public int TotalOrder { get; set; }
+        public double OrderRevenue { get; set; }
+        public int TotalBook { get; set; }
+    }
 
 }

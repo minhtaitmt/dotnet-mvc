@@ -9,7 +9,7 @@ namespace GenericRepositoryAndUnitofWork.Entities
         [Key]
         public int Id { get; set; }
 
-        public List<OrderDetail>? OrderDetails { get; set; }
+        public virtual List<OrderDetail>? OrderDetails { get; set; }
 
         public double Total { get; set; }
 

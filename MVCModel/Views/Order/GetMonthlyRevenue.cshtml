@@ -1,0 +1,52 @@
+﻿@model IEnumerable<MVCModel.Models.MonthlyRevenue>
+
+@{
+    ViewData["Title"] = "Monthly Revenue ";
+}
+
+<h1>Monthly Revenue</h1>
+
+<form asp-action="GetMonthlyRevenue" method="get" class="form-inline my-3">
+    Search for other year <input type="number" name="year" /> <button>Search</button>
+</form>
+
+<p>
+    <a asp-action="Index">Back to list</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Month)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderRevenue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalBook)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Month)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderRevenue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalBook)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

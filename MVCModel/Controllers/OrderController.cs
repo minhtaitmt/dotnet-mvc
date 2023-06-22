@@ -134,5 +134,89 @@ namespace MVCModel.Controllers
             return View(book);
         }
 
+        [HttpGet]
+        public IActionResult GetHighestRevenueBooks(int month)
+        {
+            if (month < 1 || month > 12)
+            {
+                month = DateTime.Now.Month;
+            }
+            List<HighestRevenueBooks> book = new List<HighestRevenueBooks>();
+            HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Orders/highestRevenueBooks/month/" + month).Result;
+            if (respone.IsSuccessStatusCode)
+            {
+                string data = respone.Content.ReadAsStringAsync().Result;
+                book = JsonConvert.DeserializeObject<List<HighestRevenueBooks>>(data);
+            }
+            return View(book);
+        }
+
+        [HttpGet]
+        public IActionResult GetMonthlyRevenue(int year)
+        {
+            if (year < 2000 || year > DateTime.Now.Year)
+            {
+                year = DateTime.Now.Year;
+            }
+            List<MonthlyRevenue> revenue = new List<MonthlyRevenue>();
+            HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Orders/monthlyRevenue/year/" + year).Result;
+            if (respone.IsSuccessStatusCode)
+            {
+                string data = respone.Content.ReadAsStringAsync().Result;
+                revenue = JsonConvert.DeserializeObject<List<MonthlyRevenue>>(data);
+            }
+            return View(revenue);
+        }
+
+        [HttpGet]
+        public IActionResult GetPopularCategories(int month)
+        {
+            if (month < 1 || month > 12)
+            {
+                month = DateTime.Now.Month;
+            }
+            List<PopularCategory> categories = new List<PopularCategory>();
+            HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Orders/popularCategories/month/" + month).Result;
+            if (respone.IsSuccessStatusCode)
+            {
+                string data = respone.Content.ReadAsStringAsync().Result;
+                categories = JsonConvert.DeserializeObject<List<PopularCategory>>(data);
+            }
+            return View(categories);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            OrderViewModel order = new OrderViewModel();
+            HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Orders/" + id).Result;
+            if (respone.IsSuccessStatusCode)
+            {
+                string data = respone.Content.ReadAsStringAsync().Result;
+                order = JsonConvert.DeserializeObject<OrderViewModel>(data);
+            }
+            return View(order);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirm(int id)
+        {
+            try
+            {
+                HttpResponseMessage respone = _client.DeleteAsync(_client.BaseAddress + "/Orders/" + id).Result;
+                if (respone.IsSuccessStatusCode)
+                {
+                    TempData["successMessage"] = "Order Deleted Successfully!";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+            return View();
+        }
+
     }
 }

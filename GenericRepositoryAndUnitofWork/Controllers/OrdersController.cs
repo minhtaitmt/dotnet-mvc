@@ -90,9 +90,9 @@ namespace GenericRepositoryAndUnitofWork.Controllers
 
         /////////////////////////////////////////////////////////////////////
         [HttpGet("bestSeller/month/{month}")]
-        public IActionResult GetTenBestSellerBooks(int month)
+        public async Task<IActionResult> GetTenBestSellerBooks(int month)
         {
-            var orders = _unitOfWork.OrderRepository.GetTenBestSellerBooks(month);
+            var orders = await _unitOfWork.OrderRepository.GetTenBestSellerBooksAsync(month);
             if (orders == null)
             {
                 return NotFound();
@@ -123,9 +123,9 @@ namespace GenericRepositoryAndUnitofWork.Controllers
         }
 
         [HttpGet("UnPopularBook/month/{month}")]
-        public IActionResult GetUnpopularBooks(int month)
+        public async Task<IActionResult> GetUnpopularBooks(int month)
         {
-            var books = _unitOfWork.OrderRepository.GetUnpopularBooks(month);
+            var books = await _unitOfWork.OrderRepository.GetUnpopularBooks(month);
             if (books == null)
             {
                 return NotFound();
@@ -144,6 +144,41 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             var bookModel = _mapper.Map<BookModel>(book);
             return Ok(bookModel);
         }
+
+        [HttpGet("popularCategories/month/{month}")]
+        public async Task<IActionResult> GetPopularCategories(int month)
+        {
+            var categories = await _unitOfWork.OrderRepository.GetPopularCategoriesAsync(month);
+            if (categories == null)
+            {
+                return NotFound();
+            }
+            return Ok(categories);
+        }
+
+        [HttpGet("highestRevenueBooks/month/{month}")]
+        public async Task<IActionResult> GetHighestRevenueBooks(int month)
+        {
+            var books = await _unitOfWork.OrderRepository.GetHighestRevenueBooksAsync(month);
+            if (books == null)
+            {
+                return NotFound();
+            }
+            return Ok(books);
+        }
+
+        [HttpGet("monthlyRevenue/year/{year}")]
+        public async Task<IActionResult> GetMonthlyRevenue(int year)
+        {
+            var revenue = await _unitOfWork.OrderRepository.GetMonthlyRevenueAsync(year);
+            if (revenue == null)
+            {
+                return NotFound();
+            }
+            return Ok(revenue);
+        }
+
+
 
     }
 }
