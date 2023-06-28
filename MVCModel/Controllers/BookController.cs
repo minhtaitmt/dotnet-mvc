@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MVCModel.Models;
+﻿using DTO.Models;
+using Microsoft.AspNetCore.Mvc;
+//using MVCModel.Models;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Reflection;
@@ -24,12 +25,12 @@ namespace MVCModel.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<BookViewModel> books = new List<BookViewModel>();
+            List<BookModel> books = new List<BookModel>();
             HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Books/all").Result;
             if (respone.IsSuccessStatusCode)
             {
                 string data = respone.Content.ReadAsStringAsync().Result;
-                books = JsonConvert.DeserializeObject<List<BookViewModel>>(data);
+                books = JsonConvert.DeserializeObject<List<BookModel>>(data);
             }
             return View(books);
         }
@@ -40,12 +41,12 @@ namespace MVCModel.Controllers
         [HttpGet]
         public IActionResult Detail(int id)
         {
-            BookViewModel book = new BookViewModel();
+            BookModel book = new BookModel();
             HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Books/" + id).Result;
             if (respone.IsSuccessStatusCode)
             {
                 string data = respone.Content.ReadAsStringAsync().Result;
-                book = JsonConvert.DeserializeObject<BookViewModel>(data);
+                book = JsonConvert.DeserializeObject<BookModel>(data);
             }
             return View(book);
         }
@@ -125,12 +126,12 @@ namespace MVCModel.Controllers
         // GET BOOKS BETWEEN 2 PRICES
         public IActionResult BookUnion()
         {
-            List<BookViewModel> books = new List<BookViewModel>();
+            List<BookModel> books = new List<BookModel>();
             HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/Books/bookUnion").Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
-                books = JsonConvert.DeserializeObject<List<BookViewModel>>(data);
+                books = JsonConvert.DeserializeObject<List<BookModel>>(data);
             }
             return View(books);
         }
@@ -144,7 +145,7 @@ namespace MVCModel.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(BookViewModel model)
+        public IActionResult Create(BookModel model)
         {
             try
             {
@@ -170,18 +171,18 @@ namespace MVCModel.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            BookViewModel book = new BookViewModel();
+            BookModel book = new BookModel();
             HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Books/" + id).Result;
             if (respone.IsSuccessStatusCode)
             {
                 string data = respone.Content.ReadAsStringAsync().Result;
-                book = JsonConvert.DeserializeObject<BookViewModel>(data);
+                book = JsonConvert.DeserializeObject<BookModel>(data);
             }
             return View(book);
         }
 
         [HttpPost]
-        public IActionResult Edit(BookViewModel model)
+        public IActionResult Edit(BookModel model)
         {
             try
             {
@@ -207,12 +208,12 @@ namespace MVCModel.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            BookViewModel book = new BookViewModel();
+            BookModel book = new BookModel();
             HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Books/" + id).Result;
             if (respone.IsSuccessStatusCode)
             {
                 string data = respone.Content.ReadAsStringAsync().Result;
-                book = JsonConvert.DeserializeObject<BookViewModel>(data);
+                book = JsonConvert.DeserializeObject<BookModel>(data);
             }
             return View(book);
         }

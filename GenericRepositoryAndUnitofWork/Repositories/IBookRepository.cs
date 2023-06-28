@@ -1,5 +1,6 @@
-﻿using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+﻿using DTO.Models;
+using GenericRepositoryAndUnitofWork.Entities;
+//using GenericRepositoryAndUnitofWork.Models;
 
 namespace GenericRepositoryAndUnitofWork.Repositories
 {
@@ -32,5 +33,6 @@ namespace GenericRepositoryAndUnitofWork.Repositories
 
         //Task UpdateBookAsync (int id, Book book);
         void UpdateBook(int id, Book book);
+        Task<List<Book>> UpdateBookPricesAsync(List<int> bookIds, double newPrice);
     }
 }

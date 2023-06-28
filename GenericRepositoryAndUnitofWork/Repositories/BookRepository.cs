@@ -1,5 +1,6 @@
-﻿using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+﻿using DTO.Models;
+using GenericRepositoryAndUnitofWork.Entities;
+//using GenericRepositoryAndUnitofWork.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -338,6 +339,24 @@ namespace GenericRepositoryAndUnitofWork.Repositories
             thread.Start();
             thread.Join();
             
+        }
+
+        public async Task<List<Book>> UpdateBookPricesAsync(List<int> bookIds, double newPrice)
+        {
+            List<Book> updatedBooks = new List<Book>();
+
+            await Parallel.ForEachAsync(bookIds, async (bookId, ct) =>
+            {
+                Book book = await _context.Books.FindAsync(bookId);
+
+                if (book != null)
+                {
+                    book.Price = newPrice;
+                    updatedBooks.Add(book);
+                }
+            });
+
+            return updatedBooks;
         }
     }
 }

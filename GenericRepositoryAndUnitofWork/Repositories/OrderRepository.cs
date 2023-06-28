@@ -1,5 +1,6 @@
-﻿using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+﻿using DTO.Models;
+using GenericRepositoryAndUnitofWork.Entities;
+//using GenericRepositoryAndUnitofWork.Models;
 using Microsoft.EntityFrameworkCore;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -18,8 +19,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
             List<Order> result = null;
             Thread thread = new Thread(() =>
             {
-                result = _context.Orders.Include("OrderDetails").Select(order => order).ToList(); // Eager Loading
-                
+                result = _context.Orders.Include("OrderDetails").Include("OrderDetails.Book").ToList(); // Eager Loading
             });
             thread.IsBackground = false;
             thread.Start();
@@ -33,7 +33,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
             Order result = null;
             Thread thread = new Thread(() =>
             {
-                result = _context.Orders.Include("OrderDetails").SingleOrDefault(order => order.Id == id);
+                result = _context.Orders.Include("OrderDetails").Include("OrderDetails.Book").SingleOrDefault(order => order.Id == id)!;
             });
             thread.IsBackground = false;
             thread.Start();
@@ -60,12 +60,12 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         {
             var OrderList = order.OrderDetails;
             order.OrderDetails = new List<OrderDetail>();
-            if (OrderList!.Count() == 0)
+            if (OrderList!.Count == 0)
             {
                 throw new Exception("Can not find any Order!");
             }
             order.CreatedAt = DateTime.Now;//.AddMonths(-2);
-            foreach (var detail in OrderList)
+            foreach(var detail in OrderList)
             {
                 var book = await _context.Books.FindAsync(detail.BookId);
                 if (book == null)
@@ -81,12 +81,21 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                     Book = book
                 };
                 order.Total += (book.Price * detail.Quantity);
-                order.OrderDetails!.Add(orderDetail);
-                _context.OrderDetails.Add(orderDetail);
-            }
-            _context.Orders.Add(order);
-            
+                
+                try
+                {
+                    order.OrderDetails!.Add(orderDetail);
+                    _context.OrderDetails.Add(orderDetail);
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine(err);
+                }
+            };
+            await _context.Orders.AddAsync(order);
         }
+
+
 
         public void DeleteOrder(int id)
         {

@@ -9,5 +9,6 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         Task AddCategoryAsync(Category category);
         Task DeleteCategoryAsync(int id);  
         Task UpdateCategoryAsync(int id, Category category);
+        List<Book> GetCategoryBooks();
     }
 }

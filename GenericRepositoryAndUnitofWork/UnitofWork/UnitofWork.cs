@@ -1,5 +1,7 @@
 ﻿using GenericRepositoryAndUnitofWork.Entities;
 using GenericRepositoryAndUnitofWork.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GenericRepositoryAndUnitofWork.UnitofWork
 {
@@ -57,6 +59,11 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
             thread.IsBackground = false;
             thread.Start();
             thread.Join();
+        }
+
+        public IDbContextTransaction BeginTransaction()
+        {
+            return _context.Database.BeginTransaction();
         }
     }
 }

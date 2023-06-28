@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MVCModel.Models;
+﻿using DTO.Models;
+using Microsoft.AspNetCore.Mvc;
+//using MVCModel.Models;
 using Newtonsoft.Json;
 using System.Configuration;
 
@@ -124,12 +125,12 @@ namespace MVCModel.Controllers
             {
                 month = DateTime.Now.Month;
             }
-            BookViewModel book = new BookViewModel();
+            BookModel book = new BookModel();
             HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/Orders/BestSellerBook/month/" + month).Result;
             if (respone.IsSuccessStatusCode)
             {
                 string data = respone.Content.ReadAsStringAsync().Result;
-                book = JsonConvert.DeserializeObject<BookViewModel>(data);
+                book = JsonConvert.DeserializeObject<BookModel>(data);
             }
             return View(book);
         }

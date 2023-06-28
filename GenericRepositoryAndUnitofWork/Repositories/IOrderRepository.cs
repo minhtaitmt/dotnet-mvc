@@ -1,5 +1,7 @@
-﻿using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+﻿using DTO.Models;
+using GenericRepositoryAndUnitofWork.Entities;
+//using GenericRepositoryAndUnitofWork.Models;
+
 
 namespace GenericRepositoryAndUnitofWork.Repositories
 {

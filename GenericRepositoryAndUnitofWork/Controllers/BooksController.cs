@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using DTO.Models;
 using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+//using GenericRepositoryAndUnitofWork.Models;
 using GenericRepositoryAndUnitofWork.UnitofWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -140,19 +141,40 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return Ok(bookModel);
         }
 
+        //[HttpPost]
+        //public IActionResult AddBook(BookModel bookModel)
+        //{
+        //    var book = _mapper.Map<Book>(bookModel);
+        //    try
+        //    {
+        //        _unitOfWork.BookRepository.AddBook(book);
+        //        _unitOfWork.SaveChanges();
+        //    }
+        //    catch
+        //    {
+        //        return BadRequest();
+        //    }
+        //    return CreatedAtAction("GetBookById", new { id = book.Id }, _mapper.Map<BookModel>(book));
+        //}
+
         [HttpPost]
         public IActionResult AddBook(BookModel bookModel)
         {
             var book = _mapper.Map<Book>(bookModel);
-            try
+            using (var _trans = _unitOfWork.BeginTransaction())
             {
-                _unitOfWork.BookRepository.AddBook(book);
-                _unitOfWork.SaveChanges();
+                try
+                {
+                    _unitOfWork.BookRepository.AddBook(book);
+                    _unitOfWork.SaveChanges();
+                    _trans.Commit();
+                }catch (Exception err) 
+                {
+                    _trans.Rollback();
+                    return BadRequest(err);
+                }
             }
-            catch
-            {
-                return BadRequest();
-            }
+                
             return CreatedAtAction("GetBookById", new { id = book.Id }, _mapper.Map<BookModel>(book));
         }
 
@@ -160,14 +182,20 @@ namespace GenericRepositoryAndUnitofWork.Controllers
         public IActionResult UpdateBook(int id, BookModel bookModel)
         {
             var book = _mapper.Map<Book>(bookModel);
-            try
+
+            using (var _trans = _unitOfWork.BeginTransaction())
             {
-                _unitOfWork.BookRepository.UpdateBook(id, book);
-                _unitOfWork.SaveChanges();
-            }
-            catch
-            {
-                return NotFound();
+                try
+                {
+                    _unitOfWork.BookRepository.UpdateBook(id,book);
+                    _unitOfWork.SaveChanges();
+                    _trans.Commit();
+                }
+                catch (Exception err)
+                {
+                    _trans.Rollback();
+                    return BadRequest(err);
+                }
             }
             return NoContent();
         }
@@ -175,16 +203,38 @@ namespace GenericRepositoryAndUnitofWork.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteBook(int id)
         {
-            try
+            using (var _trans = _unitOfWork.BeginTransaction())
             {
-                _unitOfWork.BookRepository.DeleteBook(id);
-                _unitOfWork.SaveChanges();
-            }
-            catch
-            {
-                return NotFound();
+                try
+                {
+                    _unitOfWork.BookRepository.DeleteBook(id);
+                    _unitOfWork.SaveChanges();
+                    _trans.Commit();
+                }
+                catch (Exception err)
+                {
+                    _trans.Rollback();
+                    return BadRequest(err);
+                }
             }
             return NoContent();
+        }
+
+
+        [HttpPut("UpdatePrices")]
+        public async Task<IActionResult> UpdateBookPrices(List<int> bookIds, double newPrice)
+        {
+            try
+            {
+                List<Book> updatedBooks = await _unitOfWork.BookRepository.UpdateBookPricesAsync(bookIds, newPrice);
+                _unitOfWork.SaveChanges();
+                return Ok(updatedBooks);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi, trả về lỗi nếu có
+                return StatusCode(500, ex.Message);
+            }
         }
 
     }

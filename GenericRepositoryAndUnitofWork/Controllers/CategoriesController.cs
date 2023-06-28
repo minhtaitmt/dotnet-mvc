@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using DTO.Models;
 using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+//using GenericRepositoryAndUnitofWork.Models;
 using GenericRepositoryAndUnitofWork.Repositories;
 using GenericRepositoryAndUnitofWork.UnitofWork;
 using Microsoft.AspNetCore.Http;
@@ -95,6 +96,18 @@ namespace GenericRepositoryAndUnitofWork.Controllers
                 return BadRequest();
             }
             return NoContent();
+        }
+
+        [HttpGet("CategoryBooks")]
+        public async Task<IActionResult> GetCategoryBooks()
+        {
+            var books = _unitOfWork.CategoryRepository.GetCategoryBooks();
+            if (books == null)
+            {
+                return NotFound();
+            }
+            var model = _mapper.Map<List<BookModel>>(books);
+            return Ok(model);
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+//using GenericRepositoryAndUnitofWork.Models;
+using DTO.Models;
 
 namespace GenericRepositoryAndUnitofWork.Helpers
 {

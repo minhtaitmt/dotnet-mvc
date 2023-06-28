@@ -1,4 +1,5 @@
 ﻿using GenericRepositoryAndUnitofWork.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GenericRepositoryAndUnitofWork.UnitofWork
 {
@@ -8,5 +9,6 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
         ICategoryRepository CategoryRepository { get; }
         IOrderRepository OrderRepository { get; }
         void SaveChanges();
+        IDbContextTransaction BeginTransaction();
     }
 }

@@ -40,5 +40,17 @@ namespace GenericRepositoryAndUnitofWork.Repositories
             }
             _context.Categories.Update(category);
         }
+
+        public List<Book> GetCategoryBooks()
+        {
+            List<Book> books = new List<Book>();
+            Parallel.ForEach(_context.Categories, async category =>
+            {
+                var book = await _context.Books.Where(book => book.CategoryId ==  category.Id).ToListAsync();
+                books.Concat(book);
+            });
+
+            return books;
+        }
     }
 }

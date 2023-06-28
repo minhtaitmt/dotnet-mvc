@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using DTO.Models;
 using GenericRepositoryAndUnitofWork.Entities;
-using GenericRepositoryAndUnitofWork.Models;
+//using GenericRepositoryAndUnitofWork.Models;
 using GenericRepositoryAndUnitofWork.UnitofWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -68,7 +69,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             }
             catch
             {
-                return BadRequest();
+                return BadRequest("Fail to add order!");
             }
             return CreatedAtAction("GetOrderById", new { id = order.Id }, order);
         }
