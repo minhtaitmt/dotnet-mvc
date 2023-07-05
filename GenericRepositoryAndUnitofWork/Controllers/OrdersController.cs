@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DTO.Models;
 using GenericRepositoryAndUnitofWork.Entities;
+using GenericRepositoryAndUnitofWork.Filters;
 //using GenericRepositoryAndUnitofWork.Models;
 using GenericRepositoryAndUnitofWork.UnitofWork;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +22,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             _mapper = mapper;
         }
 
+        [AuthorizeFilter("admin")]
         [HttpGet]
         public IActionResult GetAllOrders()
         {
@@ -33,6 +35,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return Ok(orderModel);
         }
 
+        [AuthorizeFilter("admin")]
         [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
         {
@@ -45,7 +48,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return Ok(orderModel);
         }
 
-
+        [AuthorizeFilter("admin")]
         [HttpGet("details/{id}")]
         public IActionResult GetOrderDetailsById(int id)
         {
@@ -58,6 +61,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return Ok(detailsModel);
         }
 
+        [AuthorizeFilter("admin")]
         [HttpPost]
         public async Task<IActionResult> AddOrder(OrderModel orderModel)
         {
@@ -65,7 +69,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             try
             {
                 await _unitOfWork.OrderRepository.AddOrder(order);
-                _unitOfWork.SaveChanges();
+                //_unitOfWork.SaveChanges();
             }
             catch
             {
@@ -74,6 +78,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return CreatedAtAction("GetOrderById", new { id = order.Id }, order);
         }
 
+        [AuthorizeFilter("admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteOrder(int id)
         {

@@ -56,8 +56,108 @@ namespace GenericRepositoryAndUnitofWork.Repositories
             return result;
         }
 
+        //public async Task AddOrder(Order order)
+        //{
+        //    var OrderList = order.OrderDetails;
+        //    order.OrderDetails = new List<OrderDetail>();
+        //    if (OrderList!.Count == 0)
+        //    {
+        //        throw new Exception("Can not find any Order!");
+        //    }
+        //    order.CreatedAt = DateTime.Now;//.AddMonths(-2);
+        //    foreach(var detail in OrderList)
+        //    {
+        //        var book = await _context.Books.FindAsync(detail.BookId);
+        //        if (book == null)
+        //        {
+        //            throw new Exception("Book id does not match!");
+        //        }
+        //        var orderDetail = new OrderDetail
+        //        {
+        //            Quantity = detail.Quantity,
+        //            Price = book!.Price,
+        //            OrderId = order.Id,
+        //            BookId = detail.BookId,
+        //            Book = book
+        //        };
+        //        order.Total += (book.Price * detail.Quantity);
+
+        //        try
+        //        {
+        //            order.OrderDetails!.Add(orderDetail);
+        //            _context.OrderDetails.Add(orderDetail);
+        //        }
+        //        catch (Exception err)
+        //        {
+        //            Console.WriteLine(err);
+        //        }
+        //    };
+        //    await _context.Orders.AddAsync(order);
+        //}
+
+        //public async Task AddOrder(Order order)
+        //{
+        //    using var _trans = _context.Database.BeginTransaction();
+        //    var OrderList = order.OrderDetails;
+        //    order.OrderDetails = new List<OrderDetail>();
+        //    if (OrderList!.Count == 0)
+        //    {
+        //        throw new Exception("Can not find any Order!");
+        //    }
+        //    order.CreatedAt = DateTime.Now;//.AddMonths(-2);
+        //    object lockObject = new object();
+        //    try
+        //    {
+        //        Parallel.ForEach(OrderList, () => new OrderDetail(), (currentDetail, loop, detail) =>
+        //        {
+        //            Book book = new Book();
+        //            lock (lockObject)
+        //            {
+        //                var currentBook = _context.Books.Find(currentDetail.BookId);
+        //                if (currentBook == null)
+        //                {
+        //                    throw new Exception("Book id does not match!");
+        //                }
+        //                book = currentBook;
+        //            }
+        //            detail = new OrderDetail
+        //            {
+        //                Quantity = currentDetail.Quantity,
+        //                Price = book!.Price,
+        //                OrderId = order.Id,
+        //                BookId = currentDetail.BookId,
+        //                Book = book
+        //            };
+        //            order.Total += (book.Price * currentDetail.Quantity);
+        //            return detail;
+        //        }, async (finalResult) =>
+        //        {
+        //            lock (lockObject)
+        //            {
+        //                order.OrderDetails!.Add(finalResult);
+        //                _context.OrderDetails.Add(finalResult);
+        //            }
+
+
+        //        });
+        //        await _context.Orders.AddAsync(order);
+        //        await _context.SaveChangesAsync();
+        //        _trans.Commit();
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        _trans.Rollback();
+        //        Console.WriteLine(err);
+        //    }
+        //    finally
+        //    {
+        //        _context.Dispose();
+        //    }
+        //}
+
         public async Task AddOrder(Order order)
         {
+            using var _trans = _context.Database.BeginTransaction();
             var OrderList = order.OrderDetails;
             order.OrderDetails = new List<OrderDetail>();
             if (OrderList!.Count == 0)
@@ -65,37 +165,50 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                 throw new Exception("Can not find any Order!");
             }
             order.CreatedAt = DateTime.Now;//.AddMonths(-2);
-            foreach(var detail in OrderList)
+            object lockObject = new();
+            try
             {
-                var book = await _context.Books.FindAsync(detail.BookId);
-                if (book == null)
+                await Parallel.ForEachAsync(OrderList, async (detail, ct) =>
                 {
-                    throw new Exception("Book id does not match!");
-                }
-                var orderDetail = new OrderDetail
-                {
-                    Quantity = detail.Quantity,
-                    Price = book!.Price,
-                    OrderId = order.Id,
-                    BookId = detail.BookId,
-                    Book = book
-                };
-                order.Total += (book.Price * detail.Quantity);
-                
-                try
-                {
-                    order.OrderDetails!.Add(orderDetail);
-                    _context.OrderDetails.Add(orderDetail);
-                }
-                catch (Exception err)
-                {
-                    Console.WriteLine(err);
-                }
-            };
-            await _context.Orders.AddAsync(order);
+                    Book book = new Book();
+                    lock (lockObject)
+                    {
+                        var currentBook = _context.Books.Find(detail.BookId);
+                        if (currentBook == null)
+                        {
+                            throw new Exception("Book id does not match!");
+                        }
+                        book = currentBook;
+                    }
+                    var orderDetail = new OrderDetail
+                    {
+                        Quantity = detail.Quantity,
+                        Price = book!.Price,
+                        OrderId = order.Id,
+                        BookId = detail.BookId,
+                        Book = book
+                    };
+                    order.Total += (book.Price * detail.Quantity);
+                    lock (lockObject)
+                    {
+                        order.OrderDetails!.Add(orderDetail);
+                        _context.OrderDetails.Add(orderDetail);
+                    }
+                });
+                await _context.Orders.AddAsync(order);
+                await _context.SaveChangesAsync();
+                _trans.Commit();
+            }
+            catch (Exception err)
+            {
+                _trans.Rollback();
+                Console.WriteLine(err);
+            }
+            finally
+            {
+                _context.Dispose();
+            }
         }
-
-
 
         public void DeleteOrder(int id)
         {
@@ -124,7 +237,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
             {
                 var allOrders = _context.Orders.AsQueryable();
 
-                result = allOrders.Join(_context.OrderDetails, order => order.Id, orderDetail => orderDetail.OrderId,
+                result = allOrders.AsParallel().Join(_context.OrderDetails.AsParallel(), order => order.Id, orderDetail => orderDetail.OrderId,
                     (order, orderDetail) => new
                     {
                         Id = order.Id,
@@ -134,7 +247,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                         Month = order.CreatedAt.Month
                     })
                 .Where(order => order.Month == month)
-                .Join(_context.Books, order => order.BookId, book => book.Id,
+                .Join(_context.Books.AsParallel(), order => order.BookId, book => book.Id,
                 (order, book) => new
                 {
                     Id = order.Id,
@@ -145,7 +258,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                     BookName = book.Name,
                     CategoryId = book.CategoryId,
                 })
-                .Join(_context.Categories, order => order.CategoryId, category => category.Id,
+                .Join(_context.Categories.AsParallel(), order => order.CategoryId, category => category.Id,
                 (order, category) => new
                 {
                     Id = order.Id,
@@ -347,11 +460,11 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         ////// LINQ QUERY SYNTAX AND ASYNC FUNCTION
         public async Task<List<BestSellerModel>> GetTenBestSellerBooksAsync(int month)
         {
-            var query = from order in _context.Orders
-                        join detail in _context.OrderDetails on order.Id equals detail.OrderId
+            var query = from order in _context.Orders.AsParallel()
+                        join detail in _context.OrderDetails.AsParallel() on order.Id equals detail.OrderId
                         where order.CreatedAt.Month == month
-                        join book in _context.Books on detail.BookId equals book.Id
-                        join category in _context.Categories on book.CategoryId equals category.Id
+                        join book in _context.Books.AsParallel() on detail.BookId equals book.Id
+                        join category in _context.Categories.AsParallel() on book.CategoryId equals category.Id
                         group new { order, detail, book, category } by new { book.Id, book.Name, CategoryName = category.Name, Month = order.CreatedAt.Month } into bookGroup
                         orderby bookGroup.Sum(x => x.detail.Quantity) descending
                         select new BestSellerModel
@@ -365,7 +478,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                             Month = bookGroup.Key.Month
                         };
 
-            return await query.Take(10).ToListAsync();
+            return query.Take(10).ToList();
         }
 
         public async Task<List<UnPopularBooks>> GetUnpopularBooks(int month)
@@ -383,16 +496,16 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                             Description = book.Description,
                             CategoryName = category.Name,
                         };
-            return await query.ToListAsync();
+            return query.ToList();
         }
 
         // Top 5 cuốn sách có doanh thu cao nhất trong tháng
         public async Task<List<HighestRevenueBooks>> GetHighestRevenueBooksAsync(int month)
         {
-            var query = from order in _context.Orders
-                        join detail in _context.OrderDetails on order.Id equals detail.OrderId
+            var query = from order in _context.Orders.AsParallel()
+                        join detail in _context.OrderDetails.AsParallel() on order.Id equals detail.OrderId
                         where order.CreatedAt.Month == month
-                        join book in _context.Books on detail.BookId equals book.Id
+                        join book in _context.Books.AsParallel() on detail.BookId equals book.Id
                         select new
                         {
                             Id = detail.Id,
@@ -416,14 +529,14 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                             Month = bookGroup.FirstOrDefault()!.Month
                         };
 
-            return await query.Take(5).ToListAsync();
+            return query.Take(5).ToList();
         }
 
         // Doanh thu của từng tháng trong năm
         public async Task<List<MonthlyRevenue>> GetMonthlyRevenueAsync(int year)
         {
-            var query = from order in _context.Orders
-                        join detail in _context.OrderDetails on order.Id equals detail.OrderId
+            var query = from order in _context.Orders.AsParallel()
+                        join detail in _context.OrderDetails.AsParallel() on order.Id equals detail.OrderId
                         where order.CreatedAt.Year == year
                         select new
                         {
@@ -450,17 +563,17 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                             TotalBook = result.Sum(order => order.TotalBook),
                         };
 
-            return await query.ToListAsync();
+            return query.ToList();
         }
 
 
         // Top 3 categories mà sách của nó có mặt trong nhiều order nhất trong tháng
         public async Task<List<PopularCategory>> GetPopularCategoriesAsync(int month)
         {
-            var query = from order in _context.Orders
-                        join detail in _context.OrderDetails on order.Id equals detail.OrderId
+            var query = from order in _context.Orders.AsParallel()
+                        join detail in _context.OrderDetails.AsParallel() on order.Id equals detail.OrderId
                         where order.CreatedAt.Month == month && order.CreatedAt.Year == DateTime.Now.Year
-                        join book in _context.Books on detail.BookId equals book.Id
+                        join book in _context.Books.AsParallel() on detail.BookId equals book.Id
                         select new
                         {
                             DetailId = detail.Id,
@@ -477,7 +590,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                             Month = orderGroup.FirstOrDefault()!.Month,
                             OrderInclude = orderGroup.Count()
                         } into bookOrder
-                        join category in _context.Categories on bookOrder.CategoryId equals category.Id
+                        join category in _context.Categories.AsParallel() on bookOrder.CategoryId equals category.Id
                         select new PopularCategory
                         {
                             CategoryId = bookOrder.CategoryId,
@@ -485,7 +598,7 @@ namespace GenericRepositoryAndUnitofWork.Repositories
                             Month = bookOrder.Month,
                             OrderInclude = bookOrder.OrderInclude
                         };
-            return await query.Take(5).ToListAsync();
+            return query.Take(5).ToList();
         }
     }
 }

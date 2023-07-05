@@ -8,6 +8,8 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
         IBookRepository BookRepository { get; }
         ICategoryRepository CategoryRepository { get; }
         IOrderRepository OrderRepository { get; }
+        IUserRepository UserRepository { get; }
+        IAuthRepository AuthRepository { get; }
         void SaveChanges();
         IDbContextTransaction BeginTransaction();
     }

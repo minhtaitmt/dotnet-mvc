@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DTO.Models;
+using Microsoft.AspNetCore.Mvc;
+using MVCModel.Extensions;
 using MVCModel.Models;
 using System.Diagnostics;
 
@@ -15,7 +17,12 @@ namespace MVCModel.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var user = HttpContext.Session.GetObject<UserAuthModel>("user");
+            if(user == null)
+            {
+                return RedirectToAction("LogIn", "Auth");
+            }
+            return View(user);
         }
 
         public IActionResult Privacy()

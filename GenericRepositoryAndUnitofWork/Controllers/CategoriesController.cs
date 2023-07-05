@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using DTO.Models;
 using GenericRepositoryAndUnitofWork.Entities;
+using GenericRepositoryAndUnitofWork.Filters;
 //using GenericRepositoryAndUnitofWork.Models;
 using GenericRepositoryAndUnitofWork.Repositories;
 using GenericRepositoryAndUnitofWork.UnitofWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
@@ -23,6 +25,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllCategory()
         {
@@ -48,6 +51,9 @@ namespace GenericRepositoryAndUnitofWork.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        [AuthorizeFilter("admin")]
+
         public async Task<IActionResult> AddCategory(CategoryModel model)
         {
             var category = _mapper.Map<Category>(model);
@@ -64,6 +70,9 @@ namespace GenericRepositoryAndUnitofWork.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
+        [AuthorizeFilter("admin")]
+
         public async Task<IActionResult> UpdateCategory(int id, CategoryModel model)
         {
             if (id != model.Id)
@@ -84,6 +93,9 @@ namespace GenericRepositoryAndUnitofWork.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
+        [AuthorizeFilter("admin")]
+
         public async Task<IActionResult> DeleteCategory(int id)
         {
             try
@@ -97,6 +109,8 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             }
             return NoContent();
         }
+
+        [AuthorizeFilter("admin")]
 
         [HttpGet("CategoryBooks")]
         public async Task<IActionResult> GetCategoryBooks()

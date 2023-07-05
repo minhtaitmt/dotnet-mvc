@@ -11,13 +11,17 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
         private IBookRepository _bookRepository;
         private ICategoryRepository _categoryRepository;
         private IOrderRepository _orderRepository;
+        private IUserRepository _userRepository;
+        private IAuthRepository _authRepository;
 
-        public UnitofWork(BookStoreContext context, IBookRepository bookRepository, ICategoryRepository categoryRepository, IOrderRepository orderRepository)
+        public UnitofWork(BookStoreContext context, IBookRepository bookRepository, ICategoryRepository categoryRepository, IOrderRepository orderRepository, IUserRepository userRepository, IAuthRepository authRepository)
         {
             _context = context;
             _bookRepository = bookRepository;
             _categoryRepository = categoryRepository;
             _orderRepository = orderRepository;
+            _userRepository = userRepository;
+            _authRepository = authRepository;
         }
 
         public IBookRepository BookRepository
@@ -27,6 +31,13 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
                 if(_bookRepository == null )
                     _bookRepository = new BookRepository(_context);
                 return _bookRepository;
+            }
+        }
+        public IAuthRepository AuthRepository
+        {
+            get
+            {
+                return _authRepository;
             }
         }
 
@@ -47,6 +58,16 @@ namespace GenericRepositoryAndUnitofWork.UnitofWork
                 if (_orderRepository == null)
                     _orderRepository = new OrderRepository(_context);
                 return _orderRepository;
+            }
+        }
+
+        public IUserRepository UserRepository
+        {
+            get
+            {
+                if (_userRepository == null)
+                    _userRepository = new UserRepository(_context);
+                return _userRepository;
             }
         }
 

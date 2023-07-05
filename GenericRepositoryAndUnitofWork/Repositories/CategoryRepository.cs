@@ -11,16 +11,6 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         {
             _context = context;
         }
-        public async Task AddCategoryAsync(Category category)
-        {
-            _context.Categories.Add(category);
-        }
-
-        public async Task DeleteCategoryAsync(int id)
-        {
-            var book = await _context.Categories.FindAsync(id);
-            _context.Categories.Remove(book);
-        }
 
         public async Task<List<Category>> GetAllCategoryAsync()
         {
@@ -30,6 +20,17 @@ namespace GenericRepositoryAndUnitofWork.Repositories
         public async Task<Category> GetCategoryByIdAsync(int id)
         {
             return await _context.Categories.FindAsync(id);
+        }
+
+        public async Task AddCategoryAsync(Category category)
+        {
+            _context.Categories.Add(category);
+        }
+
+        public async Task DeleteCategoryAsync(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            _context.Categories.Remove(category);
         }
 
         public async Task UpdateCategoryAsync(int id, Category category)
@@ -46,8 +47,11 @@ namespace GenericRepositoryAndUnitofWork.Repositories
             List<Book> books = new List<Book>();
             Parallel.ForEach(_context.Categories, async category =>
             {
-                var book = await _context.Books.Where(book => book.CategoryId ==  category.Id).ToListAsync();
-                books.Concat(book);
+                lock (_context.Categories)
+                {
+                    var book = _context.Books.Where(book => book.CategoryId == category.Id).ToList();
+                    books.Concat(book);
+                }
             });
 
             return books;

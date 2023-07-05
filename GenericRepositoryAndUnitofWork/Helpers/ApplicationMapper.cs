@@ -15,6 +15,10 @@ namespace GenericRepositoryAndUnitofWork.Helpers
             CreateMap<OrderDetail, OrderDetailModel>().ReverseMap();
             CreateMap<Order, OrderViewModel>().ReverseMap();
             CreateMap<Order, OrderModel>().ReverseMap();
+            CreateMap<User, UserModel>().ReverseMap();
+            CreateMap<User, UserUpdateInputModel>().ReverseMap();
+            CreateMap<User, UserAddInputModel>().ReverseMap();
+            
         }
     }
 }

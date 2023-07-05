@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DTO.Models;
 using GenericRepositoryAndUnitofWork.Entities;
+using GenericRepositoryAndUnitofWork.Filters;
 //using GenericRepositoryAndUnitofWork.Models;
 using GenericRepositoryAndUnitofWork.UnitofWork;
 using Microsoft.AspNetCore.Http;
@@ -157,6 +158,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
         //    return CreatedAtAction("GetBookById", new { id = book.Id }, _mapper.Map<BookModel>(book));
         //}
 
+        [AuthorizeFilter("admin")]
         [HttpPost]
         public IActionResult AddBook(BookModel bookModel)
         {
@@ -178,6 +180,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return CreatedAtAction("GetBookById", new { id = book.Id }, _mapper.Map<BookModel>(book));
         }
 
+        [AuthorizeFilter("admin")
         [HttpPut("{id}")]
         public IActionResult UpdateBook(int id, BookModel bookModel)
         {
@@ -200,6 +203,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return NoContent();
         }
 
+        [AuthorizeFilter("admin", "hr")]
         [HttpDelete("{id}")]
         public IActionResult DeleteBook(int id)
         {
@@ -220,7 +224,7 @@ namespace GenericRepositoryAndUnitofWork.Controllers
             return NoContent();
         }
 
-
+        [AuthorizeFilter("admin", "hr")]
         [HttpPut("UpdatePrices")]
         public async Task<IActionResult> UpdateBookPrices(List<int> bookIds, double newPrice)
         {
