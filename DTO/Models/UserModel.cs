@@ -9,42 +9,47 @@ namespace DTO.Models
 {
     public class UserModel
     {
-        public int Id { get; set; }
-
-        public string? Username { get; set; }
+        [Required]
+        public string? Fullname { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date)]
         public DateTime Birthday { get; set; }
 
-        public string? Fullname { get; set; }
-
-        public string? Email { get; set; }
-
+        [Required]
         public string? Gender { get; set; }
 
+        [Required]
         public string? Address { get; set; }
 
-        public string? Phone { get; set; }
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+
+        [Required, Phone]
+        public string? PhoneNumber { get; set; }
+
     }
 
     public class UserUpdateInputModel
     {
-        public int Id { get; set; }
-
+        [Required]
         public string? Fullname { get; set; }
-
-        public string? Gender { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [DataType(DataType.Date)]
         public DateTime Birthday { get; set; }
 
-        public string? Email { get; set; }
+        [Required]
+        public string? Gender { get; set; }
 
+        [Required]
         public string? Address { get; set; }
 
-        public string? Phone { get; set; }
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+
+        [Required, Phone]
+        public string? PhoneNumber { get; set; }
     }
 
     public class UserAddInputModel
